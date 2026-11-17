@@ -111,9 +111,20 @@
     var duty = p.stampDutyOverride === null || p.stampDutyOverride === undefined
       ? stampDuty(p.price, p.buyer, p.nonResident)
       : p.stampDutyOverride;
-    var deposit = Math.min(p.deposit, p.price);
-    var fees = p.lenderFee + p.brokerFee + p.solicitor + p.survey + p.moving;
-    return { deposit: deposit, stampDuty: duty, fees: fees, total: deposit + duty + fees };
+    // Cash put into the property can never exceed its price. Anything offered
+    // beyond that is not part of the purchase, so it is left out of both worlds.
+    var deposit = Math.max(0, Math.min(p.deposit, p.price));
+    var cash = deposit >= p.price;
+    // No loan, no lender: a cash buyer pays neither the lender's fee nor a broker.
+    var fees = p.solicitor + p.survey + p.moving + (cash ? 0 : p.lenderFee + p.brokerFee);
+    return {
+      deposit: deposit,
+      surplus: Math.max(0, p.deposit - p.price),
+      cash: cash,
+      stampDuty: duty,
+      fees: fees,
+      total: deposit + duty + fees
+    };
   }
 
   /**

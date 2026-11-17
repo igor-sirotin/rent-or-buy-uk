@@ -363,6 +363,10 @@ body {
 }
 .field:focus-within { border-bottom-color: var(--tone); color: var(--ink); }
 
+/* A field that has no effect right now, e.g. mortgage terms on a cash purchase. */
+.field.is-off { opacity: .38; }
+.field.is-off:focus-within { opacity: 1; }
+
 .field__label { flex: 1 1 auto; min-width: 0; }
 
 .field__box {

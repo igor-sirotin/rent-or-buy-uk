@@ -83,6 +83,24 @@ near(r.firstRate, 4.75, 1e-9, 'first rate with a fix');
 // Savings tax presets: Budget of 28 October 2026, from 6 April 2027.
 assert.deepStrictEqual([m.SAVINGS_TAX.basic.rate, m.SAVINGS_TAX.higher.rate, m.SAVINGS_TAX.additional.rate], [24, 44, 49]);
 
+// Buying outright: no loan, no payments, no lender or broker fee, no early
+// repayment charge — and offering more than the price changes nothing.
+var outright = m.simulate(with_({ deposit: 400000, years: 3 }));
+assert.strictEqual(outright.loan, 0);
+assert.strictEqual(outright.firstPayment, 0);
+assert.strictEqual(outright.totals.interestPaid, 0);
+assert.strictEqual(outright.mortgageLeft, 0);
+assert.strictEqual(outright.earlyRepayment, 0);
+assert.strictEqual(outright.upfront.cash, true);
+assert.strictEqual(outright.upfront.fees, 2000 + 600 + 2000, 'no lender or broker fee without a loan');
+assert.strictEqual(outright.upfront.total, 400000 + 10000 + 4600);
+var over = m.simulate(with_({ deposit: 650000, years: 3 }));
+assert.strictEqual(over.upfront.deposit, 400000);
+assert.strictEqual(over.upfront.surplus, 250000);
+near(over.advantage, outright.advantage, 1e-9, 'surplus over the price is left out of both worlds');
+assert.strictEqual(m.simulate(base).upfront.cash, false);
+assert.strictEqual(m.simulate(base).upfront.fees, 999 + 2000 + 600 + 2000);
+
 // CGT only when it is not the main residence, and it lowers the outcome.
 assert.strictEqual(r.cgt, 0);
 var taxed = m.simulate(with_({ mainResidence: false }));

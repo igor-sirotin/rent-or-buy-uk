@@ -409,7 +409,11 @@
     });
     input.addEventListener('focus', function () { input.select(); });
 
-    inputs[field.id] = { sync: function () { input.value = display(field, state[field.id]); }, input: input };
+    inputs[field.id] = {
+      sync: function () { input.value = display(field, state[field.id]); },
+      input: input,
+      row: row
+    };
     return row;
   }
 
@@ -518,19 +522,32 @@
     text('verdict-note', note);
   }
 
+  /** Fields that do nothing when the home is bought outright. */
+  var MORTGAGE_FIELDS = ['term', 'fixRate', 'fixYears', 'margin', 'overpayment', 'earlyRepayment', 'lenderFee', 'brokerFee'];
+
   function renderFacts(result) {
     var up = result.upfront;
     var t = result.totals;
+
+    MORTGAGE_FIELDS.forEach(function (id) {
+      inputs[id].row.classList.toggle('is-off', up.cash);
+      inputs[id].row.title = up.cash ? 'Not used: no mortgage is needed' : '';
+    });
+
     var facts = [
       ['Cash needed to buy', money(up.total),
-        money(up.deposit) + ' deposit, ' + money(up.stampDuty) + ' stamp duty, ' + money(up.fees) + ' fees'],
-      ['Mortgage', money(result.firstPayment) + ' a month',
+        money(up.deposit) + (up.cash ? ' for the home, ' : ' deposit, ') +
+        money(up.stampDuty) + ' stamp duty, ' + money(up.fees) + ' fees'],
+      up.cash ? ['Mortgage', 'None',
+        'Bought outright, so no lender or broker fee.' + (up.surplus > 0
+          ? ' The ' + money(up.surplus) + ' beyond the price is left out of both sides.' : '')]
+      : ['Mortgage', money(result.firstPayment) + ' a month',
         result.laterPayment === null
           ? 'at ' + percent(result.firstRate) + ' on ' + money(result.loan) + ', ' +
             percent(result.loan / (state.price || 1) * 100) + ' of the price'
           : 'at ' + percent(result.firstRate) + ', then ' + money(result.laterPayment) + ' at ' +
             percent(result.laterRate) + ' once the fix ends'],
-      ['First month, buying', money(t.firstMonthBuy), 'mortgage, upkeep and bills'],
+      ['First month, buying', money(t.firstMonthBuy), up.cash ? 'upkeep and bills' : 'mortgage, upkeep and bills'],
       ['First month, renting', money(t.firstMonthRent), 'rent and bills']
     ];
     var list = document.getElementById('facts');
@@ -572,13 +589,13 @@
 
     var buy = ledger('buy', 'If you buy, then sell after ' + n, [
       ['Sale price', money(result.salePrice)],
-      ['Mortgage still owed', money(-result.mortgageLeft)],
+      result.loan > 0 ? ['Mortgage still owed', money(-result.mortgageLeft)] : null,
       ['Estate agent and solicitor', money(-costs)],
       result.earlyRepayment > 0 ? ['Early repayment charge', money(-result.earlyRepayment)] : null,
       result.cgt > 0 ? ['Capital gains tax', money(-result.cgt)] : null,
       buyerPot.balance > 0.5 ? ['Saved in the months owning cost less', money(buyerPot.balance)] : null
     ], result.buyWealth,
-      'Along the way: ' + money(t.interestPaid) + ' of mortgage interest, ' +
+      'Along the way: ' + (result.loan > 0 ? money(t.interestPaid) + ' of mortgage interest, ' : '') +
       money(result.upfront.stampDuty + result.upfront.fees) + ' of stamp duty and fees, ' +
       money(t.upkeep) + ' of upkeep.');
 
