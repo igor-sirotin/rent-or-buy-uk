@@ -16,7 +16,7 @@ var base = {
   agentFee: 1.5, saleLegal: 1800,
   baseRate: 4, priceGrowth: 3, rentGrowth: 3.5, savingsRate: 4, inflation: 3,
   buyer: 'mover', nonResident: false, mainResidence: true,
-  taxBand: 'higher', savingsTax: 42, savingsAllowance: 500, isaNow: 20000, isaPerYear: 12000
+  taxBand: 'higher', savingsTax: 44, savingsAllowance: 500, isaNow: 20000, isaPerYear: 12000
 };
 function with_(changes) { return Object.assign({}, base, changes); }
 
@@ -70,6 +70,18 @@ assert.strictEqual(m.simulate(base, 5).earlyRepayment, 0);
 // After the fix the rate is base + margin and the payment is re-struck.
 near(r.laterRate, 5, 1e-9, 'rate after fix');
 assert(r.laterPayment > r.firstPayment);
+
+// No fixed period: the mortgage is on base + margin from the first month, and
+// the first payment is struck at that rate, not the unused fixed rate.
+var tracker = m.simulate(with_({ fixYears: 0, fixRate: 9 }));
+near(tracker.firstRate, 5, 1e-9, 'first rate with no fix');
+near(tracker.firstPayment, m.payment(340000, 0.05, 360), 0.01, 'first payment with no fix');
+assert.strictEqual(tracker.laterPayment, null, 'no second payment with no fix');
+near(tracker.advantage, m.simulate(with_({ fixYears: 0, fixRate: 5 })).advantage, 1e-6, 'unused fixed rate has no effect');
+near(r.firstRate, 4.75, 1e-9, 'first rate with a fix');
+
+// Savings tax presets: Budget of 28 October 2026, from 6 April 2027.
+assert.deepStrictEqual([m.SAVINGS_TAX.basic.rate, m.SAVINGS_TAX.higher.rate, m.SAVINGS_TAX.additional.rate], [24, 44, 49]);
 
 // CGT only when it is not the main residence, and it lowers the outcome.
 assert.strictEqual(r.cgt, 0);

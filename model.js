@@ -40,9 +40,9 @@
 
   /** Savings tax and Personal Savings Allowance by band (rates from 6 April 2027). */
   var SAVINGS_TAX = {
-    basic:      { rate: 22, allowance: 1000 },
-    higher:     { rate: 42, allowance: 500 },
-    additional: { rate: 47, allowance: 0 }
+    basic:      { rate: 24, allowance: 1000 },
+    higher:     { rate: 44, allowance: 500 },
+    additional: { rate: 49, allowance: 0 }
   };
 
   function banded(price, bands) {
@@ -130,7 +130,9 @@
     var laterRate = Math.max(0, p.baseRate + p.margin) / 100;
 
     var balance = loan;
-    var rate = p.fixRate / 100;
+    // With no fixed period the mortgage tracks the base rate from the first month.
+    var rate = fixMonths > 0 ? p.fixRate / 100 : laterRate;
+    var firstRate = rate;
     var pay = payment(balance, rate, termMonths);
     var firstPayment = pay;
     var laterPayment = null;
@@ -154,7 +156,7 @@
       value = p.price * Math.pow(1 + growth, m / 12);
 
       // Mortgage: the fix ends, the rate follows the base rate.
-      if (m === fixMonths && m < termMonths) {
+      if (m > 0 && m === fixMonths && m < termMonths) {
         rate = laterRate;
         pay = payment(balance, rate, termMonths - m);
         laterPayment = pay;
@@ -212,6 +214,7 @@
       upfront: up,
       loan: loan,
       firstPayment: firstPayment,
+      firstRate: firstRate * 100,
       laterPayment: laterPayment,
       laterRate: laterRate * 100,
       salePrice: salePrice,

@@ -48,7 +48,7 @@ overwritten by accident.
 It is an estimate resting on your own guesses about rates and prices. It leaves out
 Lifetime ISA bonuses, remortgage fees, the cost of moving between rentals, and
 everything that is not money. Savings tax uses the rates that apply from April 2027
-(22% / 42% / 47%). Capital gains tax, where the home is not a main residence, is a
+(24% / 44% / 49%). Capital gains tax, where the home is not a main residence, is a
 flat 18% or 24% above the £3,000 allowance. **Not financial, tax or mortgage advice.**
 
 ## Running it

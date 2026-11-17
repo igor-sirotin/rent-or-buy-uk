@@ -78,7 +78,7 @@
         { id: 'taxBand', kind: 'choice', def: 'basic', options: [
           ['basic', 'basic'], ['higher', 'higher'], ['additional', 'additional']
         ] },
-        { id: 'savingsTax', label: 'Tax on savings interest', kind: 'percent', def: 22 },
+        { id: 'savingsTax', label: 'Tax on savings interest', kind: 'percent', def: 24 },
         { id: 'savingsAllowance', label: 'Tax-free interest', kind: 'money', per: 'yr', def: 1000 },
 
         { sub: 'Savings held in ISAs' },
@@ -526,8 +526,10 @@
         money(up.deposit) + ' deposit, ' + money(up.stampDuty) + ' stamp duty, ' + money(up.fees) + ' fees'],
       ['Mortgage', money(result.firstPayment) + ' a month',
         result.laterPayment === null
-          ? money(result.loan) + ' borrowed, ' + percent(result.loan / (state.price || 1) * 100) + ' of the price'
-          : 'then ' + money(result.laterPayment) + ' at ' + percent(result.laterRate) + ' once the fix ends'],
+          ? 'at ' + percent(result.firstRate) + ' on ' + money(result.loan) + ', ' +
+            percent(result.loan / (state.price || 1) * 100) + ' of the price'
+          : 'at ' + percent(result.firstRate) + ', then ' + money(result.laterPayment) + ' at ' +
+            percent(result.laterRate) + ' once the fix ends'],
       ['First month, buying', money(t.firstMonthBuy), 'mortgage, upkeep and bills'],
       ['First month, renting', money(t.firstMonthRent), 'rent and bills']
     ];
