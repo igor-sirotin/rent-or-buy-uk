@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rent, or buy and sell later</title>
+<meta name="description" content="A UK calculator: buy a home now and sell it in N years, or keep renting and leave the money in savings — which leaves you with more?">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23fbfaf7'/%3E%3Cpath d='M6 16 16 7l10 9v9H6z' fill='none' stroke='%23586b53' stroke-width='1.6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+
+<meta property="og:title" content="Rent, or buy and sell later">
+<meta property="og:description" content="Buy a UK home now and sell it in N years, or keep renting and leave the money in savings — which leaves you with more?">
+<meta property="og:type" content="website">
+</head>
+<body>
+
+<main class="page">
+
+  <header class="masthead">
+    <div class="masthead__title">
+      <div class="eyebrow">UK property</div>
+      <h1>Rent, or buy and sell later</h1>
+    </div>
+    <button type="button" class="pill-btn" id="reset">reset to defaults</button>
+  </header>
+
+  <!-- Saved calculations, kept in this browser; rendered by app.js -->
+  <section class="saves" id="saves" aria-label="Saved calculations"></section>
+
+  <!-- The answer -->
+  <section class="verdict" id="verdict" aria-live="polite">
+    <div class="verdict__sum">
+      <div class="eyebrow" id="verdict-eyebrow"></div>
+      <div class="verdict__figure" id="verdict-figure"></div>
+    </div>
+    <div class="verdict__call">
+      <div class="verdict__name" id="verdict-name"></div>
+      <div class="verdict__meta" id="verdict-meta"></div>
+      <div class="verdict__note" id="verdict-note"></div>
+    </div>
+  </section>
+
+  <!-- How the answer moves with the year of sale -->
+  <section class="outlook">
+    <figure class="chart">
+      <figcaption class="chart__caption">
+        <span class="note__label">Buying minus renting, by year of sale</span>
+        <span class="legend"><i class="swatch swatch--buy"></i>buying ahead <i class="swatch swatch--rent"></i>renting ahead</span>
+      </figcaption>
+      <svg id="chart" viewBox="0 0 640 230" role="img" aria-label="Advantage of buying over renting for each year of sale"></svg>
+    </figure>
+    <dl class="facts" id="facts"></dl>
+  </section>
+
+  <!-- The four groups of parameters; fields are rendered by app.js -->
+  <form class="params" id="params" autocomplete="off" novalidate></form>
+
+  <!-- Where the money ends up -->
+  <section class="ledgers" id="ledgers"></section>
+
+  <noscript>
+    <p class="note" style="padding:24px 0;border-top:1px solid var(--rule)">
+      This page does its arithmetic in the browser, so it needs JavaScript enabled.
+    </p>
+  </noscript>
+
+  <section class="notes" aria-label="Assumptions and caveats">
+    <p class="note"><span class="note__label">The method</span>Both paths spend the same cash. The renter keeps the deposit and buying costs in savings; whoever pays less in a month banks the difference. The answer is what each has in hand on sale day.</p>
+    <p class="note"><span class="note__label">Stamp duty</span>England and Northern Ireland rates, with first-time buyer relief, the 5% additional-property surcharge and the 2% non-resident surcharge. In Scotland or Wales, type your own figure.</p>
+    <p class="note"><span class="note__label">Tax</span>Savings interest is taxed above your allowance and outside ISAs, at the rates that apply from April 2027. A main residence is sold free of capital gains tax; otherwise 18% or 24% above £3,000.</p>
+    <p class="note"><span class="note__label">Left out</span>Lifetime ISA bonuses, remortgage fees, moving costs between rentals, rental voids, and the plain value of not being asked to leave.</p>
+  </section>
+
+  <footer class="colophon">
+    <p>
+      An estimate built on your own guesses about the future — not financial, tax or mortgage advice.
+      Check current rates and thresholds before acting on any of this.
+    </p>
+    <p>Saved calculations stay in this browser only. The page address also updates as you type, so it can be bookmarked or shared.</p>
+  </footer>
+
+</main>
+
+<script src="model.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
